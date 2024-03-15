@@ -2881,8 +2881,8 @@ checksum = "626dec3cac7cc0e1577a2ec3fc496277ec2baa084bebad95bb6fdbfae235f84c"
 
 [[package]]
 name = "plonky2"
-version = "0.2.0"
-source = "git+https://github.com/mir-protocol/plonky2.git#62ffe11a984dbc0e6fe92d812fa8da78b7ba73c7"
+version = "0.1.4"
+source = "git+https://github.com/Lagrange-Labs/plonky2#b1e3e4af7f5b482fe1edf321bc89864adacc7f82"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2893,20 +2893,20 @@ dependencies = [
  "log",
  "num",
  "plonky2_field",
- "plonky2_maybe_rayon 0.2.0 (git+https://github.com/mir-protocol/plonky2.git)",
+ "plonky2_maybe_rayon 0.1.1",
  "plonky2_util",
  "rand 0.8.5",
  "rand_chacha",
  "serde",
+ "serde_json",
  "static_assertions",
  "unroll",
- "web-time",
 ]
 
 [[package]]
 name = "plonky2_field"
-version = "0.2.0"
-source = "git+https://github.com/mir-protocol/plonky2.git#62ffe11a984dbc0e6fe92d812fa8da78b7ba73c7"
+version = "0.1.1"
+source = "git+https://github.com/Lagrange-Labs/plonky2#b1e3e4af7f5b482fe1edf321bc89864adacc7f82"
 dependencies = [
  "anyhow",
  "itertools 0.11.0",
@@ -2916,6 +2916,14 @@ dependencies = [
  "serde",
  "static_assertions",
  "unroll",
+]
+
+[[package]]
+name = "plonky2_maybe_rayon"
+version = "0.1.1"
+source = "git+https://github.com/Lagrange-Labs/plonky2#b1e3e4af7f5b482fe1edf321bc89864adacc7f82"
+dependencies = [
+ "rayon",
 ]
 
 [[package]]
@@ -2928,17 +2936,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "plonky2_maybe_rayon"
-version = "0.2.0"
-source = "git+https://github.com/mir-protocol/plonky2.git#62ffe11a984dbc0e6fe92d812fa8da78b7ba73c7"
-dependencies = [
- "rayon",
-]
-
-[[package]]
 name = "plonky2_util"
-version = "0.2.0"
-source = "git+https://github.com/mir-protocol/plonky2.git#62ffe11a984dbc0e6fe92d812fa8da78b7ba73c7"
+version = "0.1.1"
+source = "git+https://github.com/Lagrange-Labs/plonky2#b1e3e4af7f5b482fe1edf321bc89864adacc7f82"
 
 [[package]]
 name = "plonky2x"
@@ -3973,7 +3973,7 @@ dependencies = [
 [[package]]
 name = "starkyx"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/starkyx.git#ad8eb4bae41268dcb2964dab52e66d4e551abf39"
+source = "git+https://github.com/silathdiir/starkyx.git?branch=lagrange#13b28d7f2890d7e25ebe7ff27fe574841ab38728"
 dependencies = [
  "anyhow",
  "bincode",
@@ -3984,7 +3984,7 @@ dependencies = [
  "log",
  "num",
  "plonky2",
- "plonky2_maybe_rayon 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "plonky2_maybe_rayon 0.2.0",
  "rand 0.8.5",
  "serde",
  "subtle-encoding",
@@ -4749,16 +4749,6 @@ name = "web-sys"
 version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77afa9a11836342370f4817622a2f0f418b134426d91a82dfb48f532d2ec13ef"
-dependencies = [
- "js-sys",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "web-time"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a6580f308b1fad9207618087a65c04e7a10bc77e02c8e84e9b00dd4b12fa0bb"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
