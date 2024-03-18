@@ -67,9 +67,21 @@ where
         };
 
         Self::build_from_hash_bytes(circuit, |builder, targets| {
-            targets
+            let bits: Vec<_> = targets
                 .iter()
-                .map(|t| ByteVariable::from_target(builder, *t))
+                // TODO: Consider the public input target is U64 at maximum, it
+                // may be some overhead for Bool and U32, may optimize later.
+                .flat_map(|t| {
+                    builder
+                        .api
+                        .split_le(*t, u64::BITS as usize)
+                        .into_iter()
+                        .map(|t| t.target)
+                })
+                .collect();
+
+            bits.chunks_exact(ByteVariable::nb_elements())
+                .map(ByteVariable::from_targets)
                 .collect()
         })
     }
