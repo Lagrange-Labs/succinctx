@@ -368,6 +368,8 @@ where
         let comparison_generator_id = ComparisonGenerator::<L::Field, D>::id();
         r.register_simple::<ComparisonGenerator<L::Field, D>>(comparison_generator_id);
 
+        // TODO: register QuinticQuotientGenerator and QuinticSqrtGenerator of plonky2-ecgfp5.
+
         r.register_hint::<BeaconBalanceWitnessHint>();
 
         r.register_async_hint::<BeaconAllWithdrawalsHint>();

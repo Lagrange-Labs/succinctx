@@ -1,19 +1,22 @@
+use std::collections::BTreeMap;
 use std::fs::{self, File};
 use std::path::Path;
 
 use anyhow::Result;
 use log::{debug, info};
+use plonky2::iop::target::Target;
 use plonky2::iop::witness::{PartialWitness, WitnessWrite};
 use plonky2::plonk::circuit_data::{
-    CommonCircuitData, VerifierCircuitTarget, VerifierOnlyCircuitData,
+    CircuitData, CommonCircuitData, VerifierCircuitTarget, VerifierOnlyCircuitData,
 };
 use plonky2::plonk::config::{AlgebraicHasher, GenericConfig};
 use plonky2::plonk::proof::{ProofWithPublicInputs, ProofWithPublicInputsTarget};
 use serde::Serialize;
 
 use crate::backend::circuit::{CircuitBuild, PlonkParameters};
-use crate::frontend::builder::CircuitBuilder;
+use crate::frontend::builder::{CircuitBuilder, CircuitIO};
 use crate::frontend::vars::{ByteVariable, CircuitVariable, Variable};
+
 #[derive(Debug)]
 pub struct WrappedCircuit<
     InnerParameters: PlonkParameters<D>,
@@ -43,6 +46,42 @@ where
     <InnerParameters::Config as GenericConfig<D>>::Hasher: AlgebraicHasher<InnerParameters::Field>,
 {
     pub fn build(circuit: CircuitBuild<InnerParameters, D>) -> Self {
+        Self::build_from_hash_bytes(circuit, |_, targets| {
+            targets
+                .chunks_exact(ByteVariable::nb_elements())
+                .map(ByteVariable::from_targets)
+                .collect()
+        })
+    }
+
+    /// Build from the raw circuit data of plonky2.
+    pub fn build_from_raw_data(
+        data: CircuitData<InnerParameters::Field, InnerParameters::Config, D>,
+    ) -> Self {
+        let circuit = CircuitBuild {
+            data,
+            // No input data and the all public inputs are output data.
+            io: CircuitIO::new(),
+            // Generators are added when using, and no asynchronous ones.
+            async_hints: BTreeMap::new(),
+        };
+
+        Self::build_from_hash_bytes(circuit, |builder, targets| {
+            targets
+                .iter()
+                .map(|t| ByteVariable::from_target(builder, *t))
+                .collect()
+        })
+    }
+
+    /// Build from the hash input and output bytes.
+    fn build_from_hash_bytes<Fun>(
+        circuit: CircuitBuild<InnerParameters, D>,
+        targets_to_bytes: Fun,
+    ) -> Self
+    where
+        Fun: Fn(&mut CircuitBuilder<InnerParameters, D>, &[Target]) -> Vec<ByteVariable>,
+    {
         // Standartize the public inputs/outputs to their hash and verify the circuit recursively.
         let mut hash_builder = CircuitBuilder::<InnerParameters, D>::new();
         let circuit_proof_target = hash_builder.add_virtual_proof_with_pis(&circuit.data.common);
@@ -59,14 +98,8 @@ where
             .public_inputs
             .split_at(num_input_targets);
 
-        let input_bytes = input_targets
-            .chunks_exact(ByteVariable::nb_elements())
-            .map(ByteVariable::from_targets)
-            .collect::<Vec<_>>();
-        let output_bytes = output_targets
-            .chunks_exact(ByteVariable::nb_elements())
-            .map(ByteVariable::from_targets)
-            .collect::<Vec<_>>();
+        let input_bytes = targets_to_bytes(&mut hash_builder, input_targets);
+        let output_bytes = targets_to_bytes(&mut hash_builder, output_targets);
 
         hash_builder.watch_slice(&input_bytes, "input_bytes");
         hash_builder.watch_slice(&output_bytes, "output_bytes");
@@ -131,7 +164,7 @@ where
             .register_public_inputs(&hash_proof_target.public_inputs);
 
         let recursive_circuit = recursive_builder.build();
-        debug!(
+        info!(
             "Recursive circuit degree: {}",
             recursive_circuit.data.common.degree()
         );
@@ -153,7 +186,7 @@ where
             .register_public_inputs(&proof_target.public_inputs);
 
         let wrapper_circuit = wrapper_builder.build();
-        debug!(
+        info!(
             "Wrapped circuit degree: {}",
             wrapper_circuit.data.common.degree()
         );
@@ -185,7 +218,7 @@ where
 
         let (hash_proof, _) = self.hash_circuit.prove_with_partial_witness(pw);
         self.hash_circuit.data.verify(hash_proof.clone())?;
-        debug!("Successfully verified hash proof");
+        info!("Successfully verified hash proof");
 
         let mut pw = PartialWitness::new();
         pw.set_verifier_data_target(
@@ -198,7 +231,7 @@ where
         self.recursive_circuit
             .data
             .verify(recursive_proof.clone())?;
-        debug!("Successfully verified recursive proof");
+        info!("Successfully verified recursive proof");
 
         let mut pw = PartialWitness::new();
         pw.set_verifier_data_target(

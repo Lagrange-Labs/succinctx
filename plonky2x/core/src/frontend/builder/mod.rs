@@ -44,7 +44,7 @@ pub struct CircuitBuilder<L: PlonkParameters<D>, const D: usize> {
     pub debug: bool,
     pub debug_variables: HashMap<usize, String>,
     pub(crate) hints: Vec<Box<dyn HintGenerator<L, D>>>,
-    pub async_hints: Vec<AsyncHintDataRef<L, D>>,
+    pub(crate) async_hints: Vec<AsyncHintDataRef<L, D>>,
     pub(crate) async_hints_indices: Vec<usize>,
 
     pub blake2b_accelerator: Option<BLAKE2BAccelerator>,
@@ -132,7 +132,7 @@ impl<L: PlonkParameters<D>, const D: usize> CircuitBuilder<L, D> {
     }
 
     /// Adds all the constraints nedded before building the circuit and registering hints.
-    pub fn pre_build(&mut self) {
+    fn pre_build(&mut self) {
         let blake2b_accelerator = self.blake2b_accelerator.clone();
         if let Some(accelerator) = blake2b_accelerator {
             self.curta_constrain_hash::<BLAKE2B, 96, true, 4>(accelerator);
@@ -217,7 +217,7 @@ impl<L: PlonkParameters<D>, const D: usize> CircuitBuilder<L, D> {
     }
 
     /// Constructs a map of async hints according to their generator indices.
-    pub fn async_hint_map(
+    fn async_hint_map(
         generators: &[WitnessGeneratorRef<L::Field, D>],
         async_hints: Vec<AsyncHintDataRef<L, D>>,
     ) -> BTreeMap<usize, AsyncHintDataRef<L, D>> {
