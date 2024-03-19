@@ -55,7 +55,7 @@ where
     }
 
     /// Build from the raw circuit data of plonky2.
-    pub fn build_from_raw_data(
+    pub fn build_from_raw_circuit(
         data: CircuitData<InnerParameters::Field, InnerParameters::Config, D>,
     ) -> Self {
         let circuit = CircuitBuild {
