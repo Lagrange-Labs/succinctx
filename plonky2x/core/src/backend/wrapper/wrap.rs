@@ -60,7 +60,6 @@ where
     ) -> Self {
         let circuit = CircuitBuild {
             data,
-            // No input data and the all public inputs are output data.
             io: CircuitIO::new(),
             // Generators are added when using, and no asynchronous ones.
             async_hints: BTreeMap::new(),
@@ -69,8 +68,8 @@ where
         Self::build_from_hash_bytes(circuit, |builder, targets| {
             let bits: Vec<_> = targets
                 .iter()
-                // TODO: Consider the public input target is U64 at maximum, it
-                // may be some overhead for Bool and U32, may optimize later.
+                // Consider the public input target is U64 at maximum, it may be
+                // some overhead for Bool and U32, may optimize later.
                 .flat_map(|t| {
                     builder
                         .api
@@ -176,7 +175,7 @@ where
             .register_public_inputs(&hash_proof_target.public_inputs);
 
         let recursive_circuit = recursive_builder.build();
-        info!(
+        debug!(
             "Recursive circuit degree: {}",
             recursive_circuit.data.common.degree()
         );
@@ -198,7 +197,7 @@ where
             .register_public_inputs(&proof_target.public_inputs);
 
         let wrapper_circuit = wrapper_builder.build();
-        info!(
+        debug!(
             "Wrapped circuit degree: {}",
             wrapper_circuit.data.common.degree()
         );
@@ -230,7 +229,7 @@ where
 
         let (hash_proof, _) = self.hash_circuit.prove_with_partial_witness(pw);
         self.hash_circuit.data.verify(hash_proof.clone())?;
-        info!("Successfully verified hash proof");
+        debug!("Successfully verified hash proof");
 
         let mut pw = PartialWitness::new();
         pw.set_verifier_data_target(
@@ -243,7 +242,7 @@ where
         self.recursive_circuit
             .data
             .verify(recursive_proof.clone())?;
-        info!("Successfully verified recursive proof");
+        debug!("Successfully verified recursive proof");
 
         let mut pw = PartialWitness::new();
         pw.set_verifier_data_target(
