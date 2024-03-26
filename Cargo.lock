@@ -3946,7 +3946,7 @@ dependencies = [
 [[package]]
 name = "starkyx"
 version = "0.1.0"
-source = "git+https://github.com/Lagrange-Labs/starkyx?branch=lagrange#62b082b798681fee8290e3c55cbf7b812bbadba6"
+source = "git+https://github.com/Lagrange-Labs/starkyx#9eb5277ec94b2ccddb9c029ab80fe8122f113fa1"
 dependencies = [
  "anyhow",
  "bincode",

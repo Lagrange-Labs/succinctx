@@ -15,7 +15,7 @@ timing = ["plonky2/timing"]
 [dependencies]
 plonky2 = { git = "https://github.com/Lagrange-Labs/plonky2", default-features = false }
 plonky2x-derive = { path = "../derive" }
-starkyx = { git = "https://github.com/Lagrange-Labs/starkyx", branch = "lagrange" }
+starkyx = { git = "https://github.com/Lagrange-Labs/starkyx" }
 
 anyhow = "1.0.75"
 array-macro = "2.1.5"
