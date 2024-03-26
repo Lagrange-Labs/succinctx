@@ -80,7 +80,12 @@ where
                 .collect();
 
             bits.chunks_exact(ByteVariable::nb_elements())
-                .map(ByteVariable::from_targets)
+                .map(|bits| {
+                    // Reverse the bits to correspond with `u64::to_le_bytes`.
+                    let mut bits = bits.to_vec();
+                    bits.reverse();
+                    ByteVariable::from_targets(&bits)
+                })
                 .collect()
         })
     }
