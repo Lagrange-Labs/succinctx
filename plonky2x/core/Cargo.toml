@@ -13,7 +13,7 @@ std = ["plonky2/std", "itertools/use_std"]
 timing = ["plonky2/timing"]
 
 [dependencies]
-plonky2 = { git = "https://github.com/Lagrange-Labs/plonky2", default-features = false }
+plonky2 = { version = "0.2.2" , default-features = false }
 plonky2x-derive = { path = "../derive" }
 starkyx = { git = "https://github.com/Lagrange-Labs/starkyx" }
 
@@ -48,10 +48,11 @@ sha256 = "1.4.0"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1.37"
 uuid = { version = "1.4.1", features = ["serde"] }
+ed25519-dalek = { version = "2.0.0", features = ["rand_core"] }
 
 [dev-dependencies]
 env_logger = "0.10.0"
-plonky2 = { git = "https://github.com/Lagrange-Labs/plonky2", features = [
+plonky2 = { version = "0.2.2" , features = [
   "gate_testing",
 ] }
 rust-crypto = "0.2"

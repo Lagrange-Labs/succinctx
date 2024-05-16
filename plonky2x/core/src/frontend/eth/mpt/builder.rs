@@ -1,3 +1,4 @@
+use ethers::types::TxHash;
 use starkyx::math::field::Field;
 
 use crate::frontend::vars::Nibbles;
@@ -201,6 +202,7 @@ impl<L: PlonkParameters<D>, const D: usize> CircuitBuilder<L, D> {
 
 #[cfg(test)]
 mod tests {
+    use ethers::types::H256;
     use log::debug;
 
     use super::super::utils::{read_fixture, EIP1186ProofResponse};
@@ -257,7 +259,9 @@ mod tests {
         let circuit = builder.mock_build();
 
         let mut input = circuit.input();
-        input.write::<Bytes32Variable>(key);
+        let mut buff = [0u8; 32];
+        key.to_big_endian(&mut buff[..]);
+        input.write::<Bytes32Variable>(TxHash(buff));
         input.write::<ArrayVariable<ArrayVariable<ByteVariable, ENCODING_LEN>, PROOF_LEN>>(
             proof_as_fixed,
         );
