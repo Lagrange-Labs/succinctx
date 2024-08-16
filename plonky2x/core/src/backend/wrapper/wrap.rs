@@ -66,26 +66,23 @@ where
         };
 
         Self::build_from_hash_bytes(circuit, |builder, targets| {
+            // This code restricts that the fields of public inputs must be within the range of
+            // Uint32, otherwise a circuit error should be caused by `split_le` (BaseSumGate).
             let bits: Vec<_> = targets
                 .iter()
-                // Consider the public input target is U64 at maximum, it may be
-                // some overhead for Bool and U32, may optimize later.
                 .flat_map(|t| {
                     builder
                         .api
-                        .split_le(*t, u64::BITS as usize)
+                        .split_le(*t, u32::BITS as usize)
                         .into_iter()
+                        // Convert to big-endian.
+                        .rev()
                         .map(|t| t.target)
                 })
                 .collect();
 
             bits.chunks_exact(ByteVariable::nb_elements())
-                .map(|bits| {
-                    // Reverse the bits to correspond with `u64::to_le_bytes`.
-                    let mut bits = bits.to_vec();
-                    bits.reverse();
-                    ByteVariable::from_targets(&bits)
-                })
+                .map(ByteVariable::from_targets)
                 .collect()
         })
     }
