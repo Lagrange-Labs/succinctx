@@ -4,6 +4,7 @@ use plonky2::field::extension::Extendable;
 use plonky2::field::goldilocks_field::GoldilocksField;
 use plonky2::hash::hash_types::RichField;
 use plonky2::plonk::config::{GenericConfig, PoseidonGoldilocksConfig};
+use poseidon2_plonky2::poseidon2_goldilock::Poseidon2GoldilocksConfig;
 use serde::{Deserialize, Serialize};
 use starkyx::math::goldilocks::cubic::GoldilocksCubicParameters;
 use starkyx::math::prelude::CubicParameters;
@@ -38,7 +39,7 @@ impl PlonkParameters<2> for DefaultParameters {
 
     type CubicParams = GoldilocksCubicParameters;
 
-    type Config = PoseidonGoldilocksConfig;
+    type Config = Poseidon2GoldilocksConfig;
 
     type CurtaConfig = CurtaPoseidonGoldilocksConfig;
 }
